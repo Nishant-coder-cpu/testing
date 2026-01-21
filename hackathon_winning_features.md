@@ -820,3 +820,4 @@ Total: 9.1/10 (92%) → Top 3 guaranteed
 
 > [!TIP]
 > **Judge Psychology**: Judges have seen 100 chatbots. Lead with: "This is NOT a chatbot. Watch this." [Show constraint graph blocking impossible path]. You'll have their attention immediately.
+
