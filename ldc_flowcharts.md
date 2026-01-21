@@ -338,27 +338,27 @@ graph LR
 ```mermaid
 graph TB
     subgraph "Career State Nodes (Software Engineering)"
-        INTERN["SWE Intern<br/>India<br/>$8k/yr<br/>n=1,247"]
-        L3_IN["SWE L3<br/>Startup India<br/>$15k/yr<br/>n=892"]
-        L3_BT_IN["SWE L3<br/>BigTech India<br/>$25k/yr<br/>n=543"]
-        L4_US["SWE L4<br/>BigTech US<br/>$150k/yr<br/>n=1,329"]
-        L5_IN["SWE L5<br/>BigTech India<br/>$40k/yr<br/>n=234"]
-        L5_US["SWE L5<br/>BigTech US<br/>$220k/yr<br/>n=782"]
-        STARTUP["Startup Founder<br/>India<br/>Variable<br/>n=156"]
+        INTERN["SWE Intern - India - 8k/yr"]
+        L3_IN["SWE L3 - Startup India - 15k/yr"]
+        L3_BT_IN["SWE L3 - BigTech India - 25k/yr"]
+        L4_US["SWE L4 - BigTech US - 150k/yr"]
+        L5_IN["SWE L5 - BigTech India - 40k/yr"]
+        L5_US["SWE L5 - BigTech US - 220k/yr"]
+        STARTUP["Startup Founder - India - Variable"]
     end
     
-    INTERN -->|"85% success<br/>1.5yr median"| L3_IN
-    INTERN -->|"45% success<br/>2.0yr median"| L3_BT_IN
+    INTERN -->|"85% / 1.5yr"| L3_IN
+    INTERN -->|"45% / 2.0yr"| L3_BT_IN
     
-    L3_IN -->|"22% success<br/>2.0yr median"| L3_BT_IN
-    L3_IN -->|"18% success<br/>2.3yr median"| L4_US
-    L3_IN -->|"12% success<br/>1.5yr median"| STARTUP
+    L3_IN -->|"22% / 2.0yr"| L3_BT_IN
+    L3_IN -->|"18% / 2.3yr"| L4_US
+    L3_IN -->|"12% / 1.5yr"| STARTUP
     
-    L3_BT_IN -->|"31% success<br/>1.8yr median"| L4_US
-    L3_BT_IN -->|"25% success<br/>2.5yr median"| L5_IN
+    L3_BT_IN -->|"31% / 1.8yr"| L4_US
+    L3_BT_IN -->|"25% / 2.5yr"| L5_IN
     
-    L4_US -->|"42% success<br/>2.2yr median"| L5_US
-    L5_IN -->|"12% success<br/>3.0yr median"| L4_US
+    L4_US -->|"42% / 2.2yr"| L5_US
+    L5_IN -->|"12% / 3.0yr"| L4_US
     
     style L4_US fill:#50C878
     style L5_US fill:#4A90E2
@@ -398,28 +398,28 @@ graph TB
 ```mermaid
 graph LR
     subgraph "Input Data"
-        LONG[(Longitudinal<br/>Survey Data)]
-        JOB[(Job Market<br/>Data)]
+        LONG[("Longitudinal Survey Data")]
+        JOB[("Job Market Data")]
         VISA[(Visa Records)]
     end
     
     subgraph "Survival Analysis"
-        KM[Kaplan-Meier<br/>Estimator]
-        COX[Cox Proportional<br/>Hazards]
-        AFT[Accelerated Failure<br/>Time Models]
+        KM[Kaplan-Meier Estimator]
+        COX[Cox Proportional Hazards]
+        AFT[Accelerated Failure Time Models]
     end
     
     subgraph "Bayesian Inference"
-        PRIOR[Historical<br/>Priors]
-        LIKE[Likelihood<br/>Function]
-        POST[Posterior<br/>Distribution]
-        MCMC[MCMC<br/>Sampling]
+        PRIOR[Historical Priors]
+        LIKE[Likelihood Function]
+        POST[Posterior Distribution]
+        MCMC[MCMC Sampling]
     end
     
     subgraph "Output"
-        TPROB["Transition<br/>Probabilities<br/>(with CI)"]
-        TTIME["Time to<br/>Transition<br/>(P10/P50/P90)"]
-        CONTEXT["Context<br/>Modifiers"]
+        TPROB["Transition Probabilities with CI"]
+        TTIME["Time to Transition P10/P50/P90"]
+        CONTEXT["Context Modifiers"]
     end
     
     LONG --> KM
@@ -447,11 +447,11 @@ graph LR
 %%{init: {'theme':'base'}}%%
 graph LR
     subgraph "Time to H1B Approval"
-        T0["t=0<br/>Applied<br/>P(success)=1.0"]
-        T1["t=6mo<br/>P(success)=0.85<br/>(15% rejected)"]
-        T2["t=12mo<br/>P(success)=0.72<br/>(28% rejected)"]
-        T3["t=18mo<br/>P(success)=0.68<br/>(32% rejected)"]
-        T4["t=24mo<br/>P(success)=0.65<br/>(35% rejected)"]
+        T0["t=0 | Applied | P=1.0"]
+        T1["t=6mo | P=0.85 | 15% rejected"]
+        T2["t=12mo | P=0.72 | 28% rejected"]
+        T3["t=18mo | P=0.68 | 32% rejected"]
+        T4["t=24mo | P=0.65 | 35% rejected"]
     end
     
     T0 --> T1 --> T2 --> T3 --> T4
@@ -484,34 +484,31 @@ sequenceDiagram
     PolicyAPI-->>System: Current approval rate: 76% (vs 82% historical)
     
     System->>LLM: Extract structured modifiers from documents
-    Note over LLM: Constrained prompt:<br/>"Extract ONLY numerical modifiers,<br/>do NOT generate probabilities"
+    Note over LLM: Constrained prompt to extract modifiers only
     
     LLM-->>System: {visa_difficulty: 1.3, job_availability: 0.8, delay_months: +6}
     
     System->>TransitionModel: Apply modifiers to base model
-    Note over TransitionModel: p_base = 0.18 (historical)<br/>p_adjusted = 0.18 * (1/1.3) * 0.8 = 0.11
+    Note over TransitionModel: p_base = 0.18, p_adjusted = 0.11
     
     TransitionModel-->>System: Adjusted predictions
     System-->>User: Display: "11% success (vs 18% historical) due to current visa climate"
-    
-    style LLM fill:#FFB84D
-    style TransitionModel fill:#50C878
 ```
 
 **RAG Modifier Application:**
 
 ```mermaid
 graph TB
-    BASE[Base Transition Model<br/>p=0.18, t=2.3yr]
+    BASE["Base Model: p=0.18, t=2.3yr"]
     
-    MOD1[Visa Difficulty Modifier<br/>×1/1.3]
-    MOD2[Job Market Modifier<br/>×0.8]
-    MOD3[Time Delay Modifier<br/>+6 months]
+    MOD1["Visa Difficulty: ×1/1.3"]
+    MOD2["Job Market: ×0.8"]
+    MOD3["Time Delay: +6 months"]
     
-    CONF[Confidence Check<br/>LLM confidence > 0.6?]
+    CONF["Confidence Check: > 0.6?"]
     
-    ADJ[Adjusted Model<br/>p=0.11, t=2.8yr]
-    ORIG[Use Original Model<br/>p=0.18, t=2.3yr]
+    ADJ["Adjusted: p=0.11, t=2.8yr"]
+    ORIG["Original: p=0.18, t=2.3yr"]
     
     BASE --> MOD1
     MOD1 --> MOD2
@@ -532,31 +529,31 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Quantile Regression Models"
-        MODEL10[P10 Model<br/>Pessimistic]
-        MODEL50[P50 Model<br/>Median]
-        MODEL90[P90 Model<br/>Optimistic]
+        MODEL10["P10 Model - Pessimistic"]
+        MODEL50["P50 Model - Median"]
+        MODEL90["P90 Model - Optimistic"]
     end
     
     subgraph "Input Features"
-        FEAT[User Life State<br/>+ Decision Context]
+        FEAT["User Life State + Decision Context"]
     end
     
     subgraph "P10 Trajectory (Worst Case)"
-        P10_PATH["Path: Visa rejected,<br/>return to India"]
-        P10_NET["Net Worth Year 5:<br/>$45,000"]
-        P10_ASSUME["Assumptions:<br/>No H1B, salary growth 2%"]
+        P10_PATH["Path: Visa rejected, return to India"]
+        P10_NET["Net Worth Year 5: $45,000"]
+        P10_ASSUME["Assumptions: No H1B, salary growth 2%"]
     end
     
     subgraph "P50 Trajectory (Median)"
-        P50_PATH["Path: H1B approved,<br/>L4 SWE US"]
-        P50_NET["Net Worth Year 5:<br/>$180,000"]
-        P50_ASSUME["Assumptions:<br/>H1B in 2yr, promotion year 4"]
+        P50_PATH["Path: H1B approved, L4 SWE US"]
+        P50_NET["Net Worth Year 5: $180,000"]
+        P50_ASSUME["Assumptions: H1B in 2yr, promotion year 4"]
     end
     
     subgraph "P90 Trajectory (Best Case)"
-        P90_PATH["Path: FAANG L5,<br/>Green Card"]
-        P90_NET["Net Worth Year 5:<br/>$420,000"]
-        P90_ASSUME["Assumptions:<br/>Fast H1B, L5 in year 3,<br/>stock growth 20%"]
+        P90_PATH["Path: FAANG L5, Green Card"]
+        P90_NET["Net Worth Year 5: $420,000"]
+        P90_ASSUME["Assumptions: Fast H1B, L5 in year 3, stock growth 20%"]
     end
     
     FEAT --> MODEL10
@@ -585,21 +582,21 @@ graph TB
 ```mermaid
 graph LR
     subgraph "Decision Options"
-        A[Option A:<br/>Startup<br/>Income: Low<br/>Balance: Poor<br/>Stability: Low]
-        B[Option B:<br/>BigTech<br/>Income: High<br/>Balance: Good<br/>Stability: High]
-        C[Option C:<br/>Govt Job<br/>Income: Medium<br/>Balance: Excellent<br/>Stability: Highest]
+        A["Option A: Startup | Income:Low, Balance:Poor, Stability:Low"]
+        B["Option B: BigTech | Income:High, Balance:Good, Stability:High"]
+        C["Option C: Govt Job | Income:Med, Balance:Excellent, Stability:Highest"]
     end
     
     subgraph "Dominance Analysis"
-        DOM[B dominates A<br/>on all dimensions]
-        NDOM[B and C are<br/>non-dominated<br/>trade-offs exist]
+        DOM["B dominates A on all dimensions"]
+        NDOM["B and C are non-dominated, trade-offs exist"]
     end
     
     A -->|Dominated| DOM
     B --> NDOM
     C --> NDOM
     
-    DOM --> OUTPUT[Show only:<br/>B and C]
+    DOM --> OUTPUT["Show only: B and C"]
     NDOM --> OUTPUT
     
     style B fill:#50C878
@@ -625,22 +622,22 @@ graph TB
     end
     
     subgraph "Regret Computation"
-        PATH_A[Path A:<br/>Take Decision]
-        PATH_B[Path B:<br/>Decline Decision]
+        PATH_A["Path A: Take Decision"]
+        PATH_B["Path B: Decline Decision"]
         
-        OUTCOME_A[Outcome A<br/>P10/P50/P90]
-        OUTCOME_B[Outcome B<br/>P10/P50/P90]
+        OUTCOME_A["Outcome A - P10/P50/P90"]
+        OUTCOME_B["Outcome B - P10/P50/P90"]
         
-        REGRET[Regret = Outcome_B - Outcome_A<br/>for each percentile]
+        REGRET["Regret = Outcome_B - Outcome_A for each percentile"]
     end
     
     subgraph "Reversibility Score"
-        TIME_COST[Time Cost<br/>to Reverse]
-        FIN_COST[Financial Cost<br/>to Reverse]
+        TIME_COST["Time Cost to Reverse"]
+        FIN_COST["Financial Cost to Reverse"]
         REP_COST[Reputation Cost]
         LEGAL_COST[Legal Barriers]
         
-        REV_SCORE[Reversibility:<br/>0-1 scale]
+        REV_SCORE["Reversibility: 0-1 scale"]
     end
     
     CURR --> DEC
@@ -686,12 +683,12 @@ graph TB
 %%{init: {'theme':'base'}}%%
 graph LR
     subgraph "PhD Program - Regret if Quit by Year"
-        Y1["Year 1<br/>Sunk: $20k<br/>Value Remaining: $150k<br/>Regret if Quit: LOW"]
-        Y2["Year 2<br/>Sunk: $45k<br/>Value Remaining: $125k<br/>Regret if Quit: MEDIUM"]
-        Y3["Year 3<br/>Sunk: $75k<br/>Value Remaining: $95k<br/>Regret if Quit: HIGH"]
-        Y4["Year 4<br/>Sunk: $110k<br/>Value Remaining: $60k<br/>Regret if Quit: VERY HIGH"]
-        Y5["Year 5<br/>Sunk: $140k<br/>Value Remaining: $30k<br/>Regret if Quit: MEDIUM"]
-        DONE["Complete<br/>Sunk: $170k<br/>Value Gained: $170k<br/>Regret: NONE"]
+        Y1["Year 1 | Sunk:20k | Remaining:150k | Regret:LOW"]
+        Y2["Year 2 | Sunk:45k | Remaining:125k | Regret:MED"]
+        Y3["Year 3 | Sunk:75k | Remaining:95k | Regret:HIGH"]
+        Y4["Year 4 | Sunk:110k | Remaining:60k | Regret:V-HIGH"]
+        Y5["Year 5 | Sunk:140k | Remaining:30k | Regret:MED"]
+        DONE["Complete | Sunk:170k | Gained:170k | Regret:NONE"]
     end
     
     Y1 --> Y2 --> Y3 --> Y4 --> Y5 --> DONE
@@ -721,23 +718,20 @@ sequenceDiagram
     Formatter->>Formatter: Convert numbers to structured JSON
     
     Formatter->>Prompt: Inject data into constrained template
-    Note over Prompt: Template rules:<br/>- No recommendations<br/>- No LLM opinions<br/>- Only translate numbers
+    Note over Prompt: Template rules - No recs, No opinions, Only translate
     
     Prompt->>LLM: Send constrained prompt
     LLM->>LLM: Generate explanation
     
     LLM->>Validator: Plain English output
     
-    Validator->>Validator: Check for violations:<br/>- Contains "you should"?<br/>- Contains new probabilities?<br/>- Contains LLM opinions?
+    Validator->>Validator: Check for violations
     
     alt Violates constraints
         Validator->>Prompt: Regenerate with stricter prompt
     else Passes validation
         Validator->>User: Display explanation
     end
-    
-    style LLM fill:#FFB84D
-    style Validator fill:#E24A4A
 ```
 
 **Constrained Prompt Template:**
@@ -836,9 +830,9 @@ flowchart TD
 ```mermaid
 graph TB
     subgraph "Frontend (React + D3.js)"
-        UI_FORM[Structured Form<br/>Age, Degree, Savings]
-        UI_VIZ[Trajectory Visualizer<br/>Interactive D3 Graph]
-        UI_EXP[Explanation Panel<br/>LLM Output]
+        UI_FORM["Structured Form: Age, Degree, Savings"]
+        UI_VIZ["Trajectory Visualizer: Interactive D3 Graph"]
+        UI_EXP["Explanation Panel: LLM Output"]
     end
     
     subgraph "Backend (FastAPI)"
@@ -848,14 +842,14 @@ graph TB
     end
     
     subgraph "Data Layer"
-        NEO[(Neo4j<br/>Constraint Graph)]
-        POSTGRES[(PostgreSQL<br/>User States)]
-        SIMDATA[(Simulated<br/>Trajectory Data)]
+        NEO[("Neo4j - Constraint Graph")]
+        POSTGRES[("PostgreSQL - User States")]
+        SIMDATA[("Simulated Trajectory Data")]
     end
     
     subgraph "ML Pipeline (scikit-learn + lifelines)"
-        QR_MODEL[Quantile Regression<br/>P10/P50/P90]
-        SURV_MODEL[Survival Analysis<br/>Time-to-Transition]
+        QR_MODEL["Quantile Regression: P10/P50/P90"]
+        SURV_MODEL["Survival Analysis: Time-to-Transition"]
     end
     
     subgraph "LLM Layer (OpenAI API)"
@@ -909,25 +903,25 @@ graph TB
     end
     
     subgraph "Microservices (Kubernetes)"
-        INGEST[Ingestion Service<br/>Python]
-        CONSTRAINT[Constraint Service<br/>Rust]
-        TRAJECTORY[Trajectory Service<br/>Python]
-        RAG_SVC[RAG Service<br/>Python]
-        RISK[Risk Service<br/>Python]
-        EXPLAIN[Explanation Service<br/>Python]
+        INGEST["Ingestion Service - Python"]
+        CONSTRAINT["Constraint Service - Rust"]
+        TRAJECTORY["Trajectory Service - Python"]
+        RAG_SVC["RAG Service - Python"]
+        RISK["Risk Service - Python"]
+        EXPLAIN["Explanation Service - Python"]
     end
     
     subgraph "Data Storage"
-        NEO[(Neo4j<br/>Constraint KG)]
-        POSTGRES[(PostgreSQL<br/>User Data)]
-        PINECONE[(Pinecone<br/>Vector DB)]
-        S3[(S3<br/>ML Models)]
+        NEO[("Neo4j - Constraint KG")]
+        POSTGRES[("PostgreSQL - User Data")]
+        PINECONE[("Pinecone - Vector DB")]
+        S3[("S3 - ML Models")]
     end
     
     subgraph "ML Training Pipeline"
         SPARK[Spark ETL]
-        TRAIN[Model Training<br/>PyTorch + Stan]
-        VERSIONING[Model Versioning<br/>MLflow]
+        TRAIN["Model Training: PyTorch + Stan"]
+        VERSIONING["Model Versioning: MLflow"]
     end
     
     subgraph "External Data"
@@ -991,32 +985,32 @@ graph TB
 
 ```mermaid
 graph TB
-    USER[User Input:<br/>Consider 3 decisions]
+    USER["User Input: Consider 3 decisions"]
     
     subgraph "Decision A: MS in US"
-        A_ENVELOPE[P10: $45k<br/>P50: $180k<br/>P90: $420k]
-        A_LOCK[Locks out:<br/>Startup, Early Retirement]
-        A_REV[Reversibility: 0.3]
+        A_ENVELOPE["P10:$45k | P50:$180k | P90:$420k"]
+        A_LOCK["Locks out: Startup, Early Retirement"]
+        A_REV["Reversibility: 0.3"]
     end
     
     subgraph "Decision B: Stay in Current Job"
-        B_ENVELOPE[P10: $30k<br/>P50: $60k<br/>P90: $120k]
-        B_LOCK[Locks out:<br/>US Immigration]
-        B_REV[Reversibility: 0.8]
+        B_ENVELOPE["P10:$30k | P50:$60k | P90:$120k"]
+        B_LOCK["Locks out: US Immigration"]
+        B_REV["Reversibility: 0.8"]
     end
     
     subgraph "Decision C: Join Indian Startup"
-        C_ENVELOPE[P10: $20k<br/>P50: $80k<br/>P90: $500k]
-        C_LOCK[Locks out:<br/>Stable Career Path]
-        C_REV[Reversibility: 0.5]
+        C_ENVELOPE["P10:$20k | P50:$80k | P90:$500k"]
+        C_LOCK["Locks out: Stable Career Path"]
+        C_REV["Reversibility: 0.5"]
     end
     
     COMPARE[Comparison Matrix]
-    PARETO[Pareto Frontier:<br/>A and C non-dominated<br/>B dominated by A]
+    PARETO["Pareto Frontier: A and C non-dominated, B dominated by A"]
     
-    REGRET[Regret Analysis:<br/>If choose B over A: -$120k median<br/>If choose B over C: -$20k median]
+    REGRET["Regret Analysis: If B over A = -$120k median, If B over C = -$20k median"]
     
-    OUTPUT[User sees:<br/>Side-by-side comparison<br/>Pareto frontier<br/>Regret matrix]
+    OUTPUT["User sees: Side-by-side comparison, Pareto frontier, Regret matrix"]
     
     USER --> A_ENVELOPE
     USER --> B_ENVELOPE
@@ -1074,7 +1068,7 @@ sequenceDiagram
     NewsAPI-->>System: 150k tech layoffs in 2024-2025
     
     System->>LLM: Extract structured modifiers
-    Note over LLM: Prompt: "Extract ONLY<br/>numerical impact on:<br/>- visa_difficulty<br/>- job_availability<br/>- time_delay"
+    Note over LLM: Extract numerical impact on visa_difficulty, job_availability, time_delay
     
     LLM-->>System: {visa_difficulty: 1.3x, job_availability: 0.82x, delay: +4 months}
     
@@ -1082,10 +1076,6 @@ sequenceDiagram
     TransitionModel-->>System: Adjusted P10/P50/P90
     
     System-->>User: Display: Updated predictions + context explanation
-    
-    style USCIS_API fill:#4A90E2
-    style LLM fill:#FFB84D
-    style TransitionModel fill:#50C878
 ```
 
 ---
