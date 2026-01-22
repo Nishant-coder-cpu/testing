@@ -395,7 +395,7 @@ Year 0 ────────────► Year 5
 >
 > This is decision infrastructure, not a chatbot."
 
-**Visual**: Show 5-layer architecture diagram (flowchart #1 from earlier).
+**Visual**: Show 4-layer architecture diagram with causal RAG focus.
 
 ---
 
@@ -586,8 +586,8 @@ regret = compute_regret("Stay in job", "Do MS", "net_worth", 5)
 - "Layer 1: Structured ingestion (no free-text)"
 - "Layer 2: Constraint graph (blocks impossible futures)"
 - "Layer 3: Trajectory intelligence (data-driven models)"
-- "Layer 4: Risk analysis (regret, lock-in)"
-- "Layer 5: LLM explanation (restricted role)"
+- \"Layer 3: Causal RAG (understands cause-effect, not just correlation)\"
+- \"Layer 4: LLM explanation (multi-level, adaptive)\"
 
 ---
 
@@ -690,7 +690,7 @@ regret = compute_regret("Stay in job", "Do MS", "net_worth", 5)
 ### "What if regulations change?"
 
 **Winning Answer**:
-> "That's why we have Layer 3C: RAG-augmented context modulation.
+> "That's why we have Layer 3: Causal RAG with attribution.
 >
 > Example: If H1B cap increases from 85k → 110k (pending bill):
 > - RAG retrieves policy update
@@ -820,4 +820,5 @@ Total: 9.1/10 (92%) → Top 3 guaranteed
 
 > [!TIP]
 > **Judge Psychology**: Judges have seen 100 chatbots. Lead with: "This is NOT a chatbot. Watch this." [Show constraint graph blocking impossible path]. You'll have their attention immediately.
+
 
