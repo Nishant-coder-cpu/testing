@@ -10,50 +10,72 @@
 
 **Life Decision Coach** is a data-driven AI system that helps users understand long-term consequences of high-stakes decisions (career, education, finance, migration, entrepreneurship) by computing **reachable future life trajectories** rather than giving advice.
 
-### Core Differentiators
+### Core Differentiators (v3.0)
 - ✅ **Data-first, not LLM-first**: All decision logic comes from historical data
-- ✅ **Constraint-aware**: Models hard reality (visas, degrees, age limits)
-- ✅ **Uncertainty-honest**: Shows P10/P50/P90 futures, not single predictions
-- ✅ **Regret-aware**: Identifies irreversible decisions and lock-in points
+- ✅ **Constraint-aware with temporal reasoning**: Models hard reality + time-dependent rules
+- ✅ **Uncertainty-honest**: Shows P10/P50/P90 futures across multiple time horizons
+- ✅ **Deep learning powered**: Transformers, GNNs, ensemble forecasting
+- ✅ **Causal reasoning**: Not just correlation, but understanding cause-effect
+- ✅ **Lock-in & regret aware**: Integrated path analysis (reversibility, opportunity cost)
+- ✅ **Adaptive explanations**: Expert/novice modes + visual charts
 - ❌ **Not a chatbot**: No conversational advice
 - ❌ **Not a recommender**: No "you should do X"
-- ❌ **Not a simulation**: No random Monte Carlo futures
+- ❌ **Not a simulation**: Deterministic outcome envelopes, not Monte Carlo
 
 ---
 
-## System Architecture: 5-Layer Stack
+## System Architecture: 4-Layer Stack (Upgraded)
+
+> [!NOTE]
+> **Architecture v3.0**: Removed Layer 4 as standalone, redistributed functionality across layers, upgraded with modern ML/AI techniques.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  Layer 5: Explanation (LLM-Only Zone)                       │
-│  Purpose: Translate numbers → human language                │
+│  Layer 4: Multi-Level Explanation (UPGRADED)                │
+│  Purpose: Adaptive explanations + visual generation          │
+│  Features: Expert/novice modes, charts, interactive Q&A      │
 ├─────────────────────────────────────────────────────────────┤
-│  Layer 4: Risk, Regret & Lock-In Analysis                   │
-│  Purpose: Detect irreversible decisions, compute regret      │
+│  Layer 3: Advanced Trajectory Intelligence (UPGRADED)       │
+│  Purpose: Deep learning + ensemble + counterfactual          │
+│  ├─ 3A: Multi-Modal Trajectory Graph (embeddings, GNNs)     │
+│  ├─ 3B: Ensemble Forecasting (Transformers, GB, GP)         │
+│  ├─ 3C: Causal RAG with Attribution (not just correlation)  │
+│  └─ 3D: Multi-Horizon Envelopes + Regret Analysis           │
 ├─────────────────────────────────────────────────────────────┤
-│  Layer 3: Data-Learned Trajectory Intelligence (CORE)       │
-│  Purpose: Compute reachable futures from data                │
-│  ├─ 3A: Trajectory Knowledge Graph                          │
-│  ├─ 3B: Empirical Transition Models                         │
-│  ├─ 3C: RAG-Augmented Context Modulation                    │
-│  └─ 3D: Deterministic Outcome Envelopes                     │
+│  Layer 2: Intelligent Constraint & Path Analysis (UPGRADED) │
+│  ├─ 2A: Temporal Constraint Graph (time-dependent rules)    │
+│  ├─ 2B: LLM Classifier + Lock-In Detector (integrated)      │
+│  └─ 2C: Reversibility & Path Properties (NEW sublayer)      │
+│  Purpose: Smart filtering + path quality scoring             │
 ├─────────────────────────────────────────────────────────────┤
-│  Layer 2: Reality Constraint & Classification               │
-│  ├─ 2A: Hard Constraint Graph (deterministic)               │
-│  └─ 2B: LLM Feasibility Classifier (interactive)            │
-│  Purpose: Filter impossible paths, clarify ambiguous ones    │
-├─────────────────────────────────────────────────────────────┤
-│  Layer 1: Life State Ingestion (mutable)                    │
-│  Purpose: Convert input → structured state (dynamic updates) │
+│  Layer 1: Adaptive State Ingestion (UPGRADED)               │
+│  Purpose: Multi-modal input + progressive disclosure         │
+│  Features: LinkedIn import, voice input, privacy-preserving  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### What Changed in v3.0
+
+**Removed**: Layer 4 (Risk, Regret & Lock-In Analysis) as standalone layer
+
+**Redistributed**:
+- Lock-in detection → Layer 2B (it's constraint graph topology)
+- Regret computation → Layer 3D (it's trajectory comparison)
+- Reversibility scoring → Layer 2C (new sublayer for path properties)
+
+**Upgraded**: Every layer with cutting-edge ML/AI techniques
+
+
+
 ---
 
-## Layer 1: Life State Ingestion
+##Layer 1: Adaptive State Ingestion (UPGRADED v3.0)
+
+> [!NOTE]
+> **v3.0 Upgrades**: Multi-modal input processing, progressive disclosure, privacy-preserving data handling, schema versioning
 
 ### Purpose
-Convert ambiguous user input into a **structured, machine-readable Life State Vector** that eliminates free-text reasoning.
+Convert diverse user inputs into a **structured, machine-readable Life State Vector** through adaptive, multi-modal ingestion that minimizes user effort while maximizing data quality.
 
 ### Technical Implementation
 
@@ -155,11 +177,15 @@ This dynamic enrichment allows the system to:
 
 ---
 
-## Layer 2: Reality Constraint & Classification
+## Layer 2: Intelligent Constraint & Path Analysis (UPGRADED v3.0)
 
-Layer 2 is split into two phases that work sequentially:
-- **Layer 2A**: Deterministic hard constraint filtering (graph-based rules)
-- **Layer 2B**: Intelligent LLM-based classification with interactive clarification
+> [!NOTE]
+> **v3.0 Upgrades**: Added Layer 2C (path properties), integrated lock-in detection into 2B, temporal constraint support in 2A
+
+Layer 2 has three sublayers that work sequentially:
+- **Layer 2A**: Temporal constraint graph (time-dependent rules)
+- **Layer 2B**: LLM classifier + lock-in detector (integrated from old Layer 4)
+- **Layer 2C**: Reversibility & path properties (NEW - quality scoring)
 
 ---
 
@@ -531,7 +557,7 @@ Layer 3 can now confidently model trajectories because:
 
 ---
 
-## Layer 3: Data-Learned Trajectory Intelligence (CORE)
+## Layer 3: Advanced Trajectory Intelligence (UPGRADED v3.0)`r`n`r`n> [!NOTE]`r`n> **v3.0 Upgrades**: Ensemble forecasting (Transformers, GNNs), causal RAG, multi-horizon modeling, integrated regret analysis from old Layer 4`r`n
 
 ### 3A. Trajectory Knowledge Graph
 
@@ -834,151 +860,12 @@ non_dominated = ["B: BigTech", "C: Govt Job"]
 
 ---
 
-## Layer 4: Risk, Regret & Lock-In Analysis
+
+
+## Layer 4: Multi-Level Explanation (UPGRADED v3.0)
 
 ### Purpose
-Detect **irreversible decisions** and compute **counterfactual regret** to prevent life-altering mistakes.
-
-### Key Concepts
-
-#### 1. **Lock-In Detection**
-Identify decisions that close off future options.
-
-```python
-def detect_lock_in(decision, current_state, knowledge_graph):
-    """
-    Returns: List of future states that become unreachable after this decision
-    """
-    
-    # Simulate making the decision
-    new_state = apply_decision(current_state, decision)
-    
-    # Find reachable states before vs after
-    reachable_before = get_reachable_states(current_state, knowledge_graph)
-    reachable_after = get_reachable_states(new_state, knowledge_graph)
-    
-    # Lock-in = options lost
-    locked_out_states = reachable_before - reachable_after
-    
-    return locked_out_states
-
-# Example
-decision = "Accept tenure-track professor role"
-locked_out = detect_lock_in(decision, user_state, graph)
-
-# Output:
-# Locked out states:
-# - "Tech startup founder" (tenure requires 6-year commitment)
-# - "Industry SWE role" (academic career hard to exit)
-# - "Geographic mobility" (tied to university location)
-```
-
-#### 2. **Regret Computation (Counterfactual Analysis)**
-
-Compute: *"If I choose A, how much better could I have done with B?"*
-
-```python
-def compute_regret(decision_A, decision_B, outcome_metric, horizon_years):
-    """
-    Returns: Expected regret of choosing A over B
-    """
-    
-    # Predict outcomes for both decisions
-    outcomes_A = predict_trajectory(decision_A, horizon_years)
-    outcomes_B = predict_trajectory(decision_B, horizon_years)
-    
-    # Regret = difference in desired metric
-    regret_P50 = outcomes_B["P50"][outcome_metric] - outcomes_A["P50"][outcome_metric]
-    regret_P90 = outcomes_B["P90"][outcome_metric] - outcomes_A["P90"][outcome_metric]
-    
-    return {
-        "median_regret": regret_P50,
-        "best_case_regret": regret_P90,
-        "metric": outcome_metric
-    }
-
-# Example
-regret = compute_regret(
-    decision_A="Stay in current job",
-    decision_B="Do MS in CS",
-    outcome_metric="net_worth",
-    horizon_years=10
-)
-
-# Output:
-# {
-#   "median_regret": +$120,000  (MS wins by $120k at P50)
-#   "best_case_regret": +$350,000  (MS wins by $350k at P90)
-#   "metric": "net_worth"
-# }
-```
-
-#### 3. **Time-Decay Regret (Sunk Cost Analysis)**
-
-```python
-def time_decay_regret(decision, years_invested):
-    """
-    How much regret changes as you invest more time in a path
-    """
-    
-    # Example: PhD program
-    # Year 1: Easy to quit, low sunk cost
-    # Year 4: High sunk cost, but also closer to completion
-    
-    regret_profile = []
-    for year in range(1, years_invested + 1):
-        sunk_cost = calculate_sunk_cost(decision, year)
-        remaining_value = calculate_remaining_value(decision, year)
-        
-        # Regret = sunk cost - remaining value
-        regret_profile.append({
-            "year": year,
-            "regret_if_quit": sunk_cost - remaining_value
-        })
-    
-    return regret_profile
-
-# Output for PhD:
-# Year 1: $15k (low regret to quit)
-# Year 3: $80k (high regret, not yet done)
-# Year 5: $20k (low regret, almost done, value high)
-```
-
-#### 4. **Reversibility Score**
-
-```python
-def reversibility_score(decision):
-    """
-    0 = irreversible (e.g., having a child)
-    1 = fully reversible (e.g., trying a new hobby)
-    """
-    
-    factors = {
-        "time_cost_to_reverse": 0-1,  # Can you undo in <1 year?
-        "financial_cost_to_reverse": 0-1,  # Can you afford to undo?
-        "reputation_cost": 0-1,  # Will it damage your career?
-        "legal_barriers": 0-1  # Any legal blocks to reversal?
-    }
-    
-    return np.mean(list(factors.values()))
-
-# Examples:
-# "Take a sabbatical": 0.7 (mostly reversible)
-# "Start a company": 0.4 (hard to reverse, reputation risk)
-# "Have a child": 0.0 (irreversible)
-```
-
-### Why This Matters
-- **Prevents regret**: User sees "if I skip grad school, I lock out $350k in P90 case"
-- **Crystallizes risk**: "This decision is 0.15 reversibility — be sure"
-- **Unique insight**: No other system quantifies lock-in and regret
-
----
-
-## Layer 5: Explanation Layer (LLM-Only Zone)
-
-### Purpose
-Translate **numerical outputs** from Layers 1-4 into **human-understandable explanations** WITHOUT allowing LLMs to make decisions.
+Translate **numerical outputs** from Layers 1-3 into **human-understandable explanations** WITHOUT allowing LLMs to make decisions.
 
 ### Input to LLM
 ```json
@@ -1422,4 +1309,7 @@ It's the system that should exist before anyone makes a high-stakes life decisio
 
 > [!IMPORTANT]
 > **Core Philosophy**: Treat life decisions like engineering problems—model the system, quantify uncertainty, optimize under constraints. Don't rely on advice. Build decision infrastructure.
+
+
+
 
