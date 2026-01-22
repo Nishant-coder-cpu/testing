@@ -35,12 +35,9 @@
 │  Purpose: Adaptive explanations + visual generation          │
 │  Features: Expert/novice modes, charts, interactive Q&A      │
 ├─────────────────────────────────────────────────────────────┤
-│  Layer 3: Advanced Trajectory Intelligence (UPGRADED)       │
-│  Purpose: Deep learning + ensemble + counterfactual          │
-│  ├─ 3A: Multi-Modal Trajectory Graph (embeddings, GNNs)     │
-│  ├─ 3B: Ensemble Forecasting (Transformers, GB, GP)         │
-│  ├─ 3C: Causal RAG with Attribution (not just correlation)  │
-│  └─ 3D: Multi-Horizon Envelopes + Regret Analysis           │
+│  Layer 3: Trajectory Intelligence with Causal RAG           │
+│  Purpose: Data-driven trajectory modeling + causal reasoning │
+│  Core: Causal RAG with Attribution (not just correlation)   │
 ├─────────────────────────────────────────────────────────────┤
 │  Layer 2: Intelligent Constraint & Path Analysis (UPGRADED) │
 │  ├─ 2A: Temporal Constraint Graph (time-dependent rules)    │
@@ -557,7 +554,7 @@ Layer 3 can now confidently model trajectories because:
 
 ---
 
-## Layer 3: Advanced Trajectory Intelligence (UPGRADED v3.0)`r`n`r`n> [!NOTE]`r`n> **v3.0 Upgrades**: Ensemble forecasting (Transformers, GNNs), causal RAG, multi-horizon modeling, integrated regret analysis from old Layer 4`r`n
+## Layer 3: Trajectory Intelligence with Causal RAG`r`n`r`n> [!NOTE]`r`n> **v3.0 Focus**: Causal RAG for understanding cause-effect relationships in life trajectories, not just statistical correlations`r`n
 
 ### 3A. Trajectory Knowledge Graph
 
@@ -1309,6 +1306,9 @@ It's the system that should exist before anyone makes a high-stakes life decisio
 
 > [!IMPORTANT]
 > **Core Philosophy**: Treat life decisions like engineering problems—model the system, quantify uncertainty, optimize under constraints. Don't rely on advice. Build decision infrastructure.
+
+
+
 
 
 
