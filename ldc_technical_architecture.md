@@ -38,11 +38,13 @@
 │  ├─ 3C: RAG-Augmented Context Modulation                    │
 │  └─ 3D: Deterministic Outcome Envelopes                     │
 ├─────────────────────────────────────────────────────────────┤
-│  Layer 2: Reality Constraint Layer (Knowledge Graph #1)     │
-│  Purpose: Encode impossible futures (hard rules)            │
+│  Layer 2: Reality Constraint & Classification               │
+│  ├─ 2A: Hard Constraint Graph (deterministic)               │
+│  └─ 2B: LLM Feasibility Classifier (interactive)            │
+│  Purpose: Filter impossible paths, clarify ambiguous ones    │
 ├─────────────────────────────────────────────────────────────┤
-│  Layer 1: Life State Ingestion                              │
-│  Purpose: Convert user input → structured state vector      │
+│  Layer 1: Life State Ingestion (mutable)                    │
+│  Purpose: Convert input → structured state (dynamic updates) │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -107,6 +109,45 @@ LifeState = {
 }
 ```
 
+#### Dynamic State Updates
+
+The Life State Vector is **mutable** and progressively enriched throughout the system pipeline:
+
+- **Layer 1 (Initial)**: Base ingestion from structured questionnaire and document parsing
+- **Layer 2B (Interactive)**: Enhanced with missing information from clarifying questions
+- **Layer 3+**: State frozen for consistent trajectory modeling
+
+**Example: State Evolution**
+
+```python
+# Initial state after Layer 1
+initial_state = {
+    "age": 28,
+    "education": [{"degree": "B.Tech", "field": "CS", "gpa": 3.7}],
+    "location": "Mumbai, India",
+    # work_experience: MISSING
+    # language_scores: MISSING
+}
+
+# Enhanced state after Layer 2B interaction
+enriched_state = {
+    "age": 28,
+    "education": [{"degree": "B.Tech", "field": "CS", "gpa": 3.7}],
+    "location": "Mumbai, India",
+    "work_experience": [  # NEW - from clarification
+        {"role": "SWE", "company": "TCS", "years": 3, "noc_code": "2173"}
+    ],
+    "language_scores": {  # NEW - from clarification
+        "ielts": {"listening": 8.5, "reading": 8.0, "writing": 7.5, "speaking": 7.5}
+    }
+}
+```
+
+This dynamic enrichment allows the system to:
+- Start with minimal user effort (basic questionnaire)
+- Request additional details only when needed for specific paths
+- Avoid overwhelming users with unnecessary questions upfront
+
 #### Why No Free-Text?
 - Structured data enables **deterministic constraint checking**
 - Removes LLM hallucination risk in critical inputs
@@ -114,9 +155,17 @@ LifeState = {
 
 ---
 
-## Layer 2: Reality Constraint Layer (Knowledge Graph #1)
+## Layer 2: Reality Constraint & Classification
 
-### Purpose
+Layer 2 is split into two phases that work sequentially:
+- **Layer 2A**: Deterministic hard constraint filtering (graph-based rules)
+- **Layer 2B**: Intelligent LLM-based classification with interactive clarification
+
+---
+
+### Layer 2A: Hard Constraint Graph
+
+#### Purpose
 Encode **hard structural constraints** that make certain futures physically/legally impossible.
 
 ### Graph Structure
@@ -196,6 +245,289 @@ def is_feasible(current_state: LifeState, target_state: LifeState) -> bool:
 - **Cuts search space by 80%+**: No wasted compute on impossible futures
 - **Prevents misleading outputs**: Never suggests "move to US" if visa is impossible
 - **Legally defensible**: All rules traceable to government regulations
+
+
+### Why This Matters
+- **Cuts search space by 80%+**: No wasted compute on impossible futures
+- **Prevents misleading outputs**: Never suggests "move to US" if visa is impossible
+- **Legally defensible**: All rules traceable to government regulations
+
+---
+
+### Layer 2B: Interactive Feasibility Classification
+
+#### Purpose
+Use LLM to intelligently categorize paths that pass hard constraints (Layer 2A) into:
+1. **Completely Feasible** - All information available, proceed to Layer 3
+2. **Maybe Feasible** - Missing information, ask clarifying questions
+3. Paths that fail Layer 2A are already **Completely Unfeasible** (rejected)
+
+#### Three-Tier Classification System
+
+```python
+def classify_path_feasibility(path, user_state, constraint_graph):
+    """
+    LLM classifies a candidate path after hard constraints are verified
+    
+    Returns: Classification status + reasoning
+    """
+    
+    # Build classification prompt for LLM
+    prompt = f"""
+    You are a feasibility classifier for life decision paths.
+    
+    USER STATE:
+    {json.dumps(user_state, indent=2)}
+    
+    CANDIDATE PATH:
+    Path: {path.name}
+    Description: {path.description}
+    
+    HARD CONSTRAINTS (ALREADY VERIFIED AS PASSING):
+    {path.satisfied_constraints}
+    
+    TASK:
+    Determine if we have ALL necessary information to model this path's 
+    trajectory, or if critical data is missing.
+    
+    Classify as:
+    - FEASIBLE: All required information is present in user state
+    - MAYBE: Missing critical information needed for trajectory modeling
+    
+    If MAYBE, specify EXACTLY what information is needed and WHY.
+    
+    OUTPUT FORMAT (JSON):
+    {{
+        "status": "FEASIBLE" or "MAYBE",
+        "confidence": 0.0-1.0,
+        "reasoning": "brief explanation",
+        "missing_info": [  // only if MAYBE
+            {{
+                "field": "work_experience_years",
+                "question": "How many years of continuous work experience do you have?",
+                "why_needed": "Required for Canada Express Entry CRS score calculation"
+            }}
+        ]
+    }}
+    
+    CONSTRAINTS:
+    - Base decisions on documented requirements only (cite sources)
+    - Do NOT invent arbitrary requirements
+    - Only ask for information that DIRECTLY impacts feasibility
+    - Maximum 3 clarifying questions per path
+    """
+    
+    llm_response = call_llm_with_constraints(prompt)
+    return parse_json(llm_response)
+```
+
+#### Interactive Clarification Loop
+
+```python
+def refine_feasibility_through_interaction(user_state, maybe_paths):
+    """
+    For each 'MAYBE' path, ask user clarifying questions and re-classify
+    
+    Returns: Updated paths + enriched user state
+    """
+    
+    refined_paths = {
+        "feasible": [],
+        "unfeasible": []
+    }
+    
+    updated_state = user_state.copy()
+    
+    for path in maybe_paths:
+        classification = path.llm_classification
+        
+        # Extract questions from LLM classification
+        questions = classification["missing_info"]
+        
+        # Present questions to user
+        print(f"\n📋 Path: {path.name}")
+        print(f"ℹ️  {classification['reasoning']}\n")
+        
+        user_answers = {}
+        for q in questions:
+            answer = input(f"❓ {q['question']}: ")
+            user_answers[q['field']] = answer
+            print(f"   💡 {q['why_needed']}\n")
+        
+        # Merge answers into user state
+        updated_state = merge_user_state(updated_state, user_answers)
+        
+        # Re-check hard constraints with new information
+        if violates_hard_constraints(path, updated_state):
+            refined_paths["unfeasible"].append(path)
+            print(f"❌ Path blocked: New information reveals constraint violation\n")
+        else:
+            refined_paths["feasible"].append(path)
+            print(f"✅ Path unlocked: All requirements satisfied\n")
+    
+    return refined_paths, updated_state
+```
+
+#### Example: Canada Express Entry Path
+
+**Scenario**: User is 28, has B.Tech in CS, no work experience info provided
+
+**Step 1: Hard Constraint Check (Layer 2A)**
+```python
+# Canada Express Entry requirements
+required_constraints = {
+    "age": "< 35 years",           # ✓ User is 28
+    "education": "Bachelor's+",    # ✓ User has B.Tech
+}
+
+# All hard constraints pass → proceed to Layer 2B
+```
+
+**Step 2: LLM Classification (Layer 2B)**
+```json
+{
+  "status": "MAYBE",
+  "confidence": 0.85,
+  "reasoning": "Express Entry uses Comprehensive Ranking System (CRS) which requires work experience duration and language test scores for calculation. Missing these critical inputs.",
+  "missing_info": [
+    {
+      "field": "work_experience_years",
+      "question": "How many years of continuous skilled work experience do you have (NOC 0, A, or B)?",
+      "why_needed": "CRS awards up to 50 points for work experience. Required to estimate if you'll exceed typical cutoff (450+ points)."
+    },
+    {
+      "field": "language_test_scores",
+      "question": "Do you have IELTS, CELPIP, or TEF scores? If yes, what are they?",
+      "why_needed": "Language proficiency is mandatory for Express Entry and accounts for up to 136 CRS points. Without this, cannot compute eligibility."
+    },
+    {
+      "field": "canadian_job_offer",
+      "question": "Do you have a valid job offer from a Canadian employer with LMIA?",
+      "why_needed": "Job offer adds 50-200 CRS points depending on NOC level. Significantly impacts competitiveness."
+    }
+  ]
+}
+```
+
+**Step 3: User Interaction**
+```
+📋 Path: Canada Express Entry (Federal Skilled Worker)
+ℹ️  Express Entry uses CRS scoring. Need work history and language scores to estimate eligibility.
+
+❓ How many years of continuous skilled work experience do you have (NOC 0, A, or B)?: 3
+   💡 CRS awards up to 50 points for work experience. Required to estimate if you'll exceed typical cutoff (450+ points).
+
+❓ Do you have IELTS, CELPIP, or TEF scores? If yes, what are they?: IELTS - L:8.5 R:8.0 W:7.5 S:7.5
+   💡 Language proficiency is mandatory for Express Entry and accounts for up to 136 CRS points. Without this, cannot compute eligibility.
+
+❓ Do you have a valid job offer from a Canadian employer with LMIA?: No
+   💡 Job offer adds 50-200 CRS points depending on NOC level. Significantly impacts competitiveness.
+```
+
+**Step 4: State Update & Re-Classification**
+```python
+# Updated user state
+enriched_state = {
+    "age": 28,
+    "education": [{"degree": "B.Tech", "field": "CS"}],
+    "work_experience": [{"years": 3, "noc_code": "2173"}],  # NEW
+    "language_scores": {  # NEW
+        "ielts": {"L": 8.5, "R": 8.0, "W": 7.5, "S": 7.5}
+    },
+    "canadian_job_offer": False  # NEW (explicit)
+}
+
+# Estimated CRS = 470-490 (age + education + experience + language)
+# Typical cutoff = 450-460
+
+# Result: ✅ Path classified as FEASIBLE
+```
+
+**Step 5: Path Proceeds to Layer 3**
+```
+✅ Path unlocked: All requirements satisfied
+
+Path now moves to Layer 3 (Trajectory Intelligence) with enriched user state.
+Trajectory models will use:
+- 3 years work experience → affects transition probabilities
+- IELTS CLB 9-10 → improves visa approval likelihood
+- No job offer → models "direct Express Entry" pathway (not PNP)
+```
+
+---
+
+#### Benefits of Interactive Classification
+
+**1. Reduces False Negatives**
+Traditional systems reject paths when data is missing. LDC asks clarifying questions, converting "insufficient data" into actionable insights.
+
+- **Old behavior**: User doesn't mention IELTS → Canada path blocked
+- **New behavior**: System asks "Do you have IELTS?" → User provides score → Path unlocked
+
+**2. Improves Trajectory Modeling Accuracy**
+Interactive clarification enriches the Life State Vector with targeted, high-value information that directly impacts probability calculations in Layer 3.
+
+**3. Educational & Transparent**
+Each question includes a "why this matters" explanation, helping users understand what requirements exist and why they're critical.
+
+**4. Maintains System Integrity**
+Unlike unconstrained LLMs, Layer 2B:
+- Only operates on paths that passed hard constraints (Layer 2A)
+- Cannot invent requirements (must cite official sources)
+- Outputs structured JSON (no free-form advice)
+- All questions logged and auditable
+
+---
+
+#### LLM Constraints in Layer 2B
+
+> [!IMPORTANT]
+> **Strict Guardrails for LLM Classifier**
+
+1. **Read-Only State Access**: LLM can read user state and constraint graph but cannot modify them
+2. **Binary Classification**: Must output `FEASIBLE` or `MAYBE` (no recommendations like "you should apply")
+3. **Evidence-Based Questions**: Every question must cite specific requirements (e.g., "CRS requires X per official guide")
+4. **Confidence Thresholds**: If LLM confidence < 0.7, default to `MAYBE` (conservative approach)
+5. **Question Limits**: Maximum 3 clarifying questions per path (prevents user fatigue)
+6. **Audit Logging**: All LLM calls logged with prompts, responses, and timestamps
+
+**Example of BLOCKED behavior**:
+```
+❌ VIOLATION: LLM suggests "You should improve your IELTS score to 8.0+"
+✓  CORRECT: LLM asks "What is your IELTS score?" (neutral, fact-gathering)
+
+❌ VIOLATION: LLM invents requirement "Need 5+ years for Express Entry"
+✓  CORRECT: LLM cites "Express Entry CRS awards points for 1-3+ years of experience"
+```
+
+---
+
+#### Integration with Layer 3
+
+After Layer 2B classification, the system has:
+- **Feasible paths**: Fully specified, ready for trajectory modeling
+- **Enriched user state**: Contains all information needed for accurate predictions
+- **Explicit rejections**: Unfeasible paths blocked with clear reasoning
+
+**Data Flow to Layer 3**:
+```
+Layer 2B Output → Layer 3A Input
+
+{
+    "user_state": enriched_state,        # Updated with clarification answers
+    "feasible_paths": [path1, path2],     # Only paths with complete info
+    "interaction_log": [                  # For audit trail
+        {"path": "Canada EE", "questions_asked": 3, "answers_provided": 3}
+    ]
+}
+```
+
+Layer 3 can now confidently model trajectories because:
+- All hard constraints are satisfied (Layer 2A guarantee)
+- All critical information is present (Layer 2B guarantee)
+- User state is consistent and complete
+
+---
 
 ---
 
@@ -1090,3 +1422,4 @@ It's the system that should exist before anyone makes a high-stakes life decisio
 
 > [!IMPORTANT]
 > **Core Philosophy**: Treat life decisions like engineering problems—model the system, quantify uncertainty, optimize under constraints. Don't rely on advice. Build decision infrastructure.
+
