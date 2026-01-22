@@ -1,11 +1,11 @@
-# Life Decision Coach (LDC) - Architecture Flowcharts
+# Life Decision Coach (LDC) - Architecture Flowcharts (v3.0)
 
 > [!NOTE]
-> This document contains comprehensive flowcharts for the entire LDC system architecture. Each layer is visualized with detailed component interactions and data flows.
+> **Architecture v3.0**: This document contains flowcharts for the 4-layer LDC system. Layer 4 (Risk/Regret) has been removed and its functionality integrated into Layers 2 and 3. Layer 3 is simplified to focus on causal RAG.
 
 ---
 
-## 1. Complete System Architecture Overview
+## 1. Complete System Architecture Overview (v3.0)
 
 ```mermaid
 graph TB
@@ -15,139 +15,140 @@ graph TB
         EXP[Explanation Display]
     end
     
-    subgraph "Layer 1: Life State Ingestion"
+    subgraph "Layer 1: Adaptive State Ingestion"
         FORM[Structured Questionnaire]
         DOC[Document Parser]
+        MULTI[Multi-Modal Input]
         VAL[Validator & Normalizer]
-        LSV[Life State Vector]
+        LSV[Life State Vector - Mutable]
     end
     
-    subgraph "Layer 2: Reality Constraint Graph"
-        KG1[Constraint Knowledge Graph]
-        CRED[Credential Nodes]
-        LEGAL[Legal/Visa Nodes]
-        TIME[Time Window Nodes]
-        FEAS[Feasibility Checker]
+    subgraph "Layer 2: Intelligent Constraint & Path Analysis"
+        subgraph "2A: Temporal Constraint Graph"
+            KG1[Constraint Knowledge Graph]
+            CRED[Credential Nodes]
+            LEGAL[Legal/Visa Nodes]
+            TIME[Time Window Nodes]
+        end
+        
+        subgraph "2B: LLM Classifier + Lock-In"
+            FEAS[Feasibility Classifier]
+            LOCK[Lock-In Detector - INTEGRATED]
+            CLARIFY[Interactive Clarification]
+        end
+        
+        subgraph "2C: Path Properties - NEW"
+            REV[Reversibility Scorer]
+            PROP[Path Quality Metrics]
+        end
     end
     
-    subgraph "Layer 3: Trajectory Intelligence"
-        subgraph "3A: Trajectory KG"
-            TKG[Trajectory Knowledge Graph]
-            STATES[Career State Nodes]
-            TRANS[Transition Edges]
-        end
-        
-        subgraph "3B: Empirical Models"
-            SURV[Survival Analysis]
-            COX[Cox Proportional Hazards]
-            BAYES[Bayesian Transition Models]
-        end
-        
-        subgraph "3C: RAG Context"
-            RAG[RAG Retrieval]
+    subgraph "Layer 3: Trajectory Intelligence with Causal RAG"
+        subgraph "Causal RAG - CORE FOCUS"
+            RAG[Causal RAG Retrieval]
             VDB[Vector Database]
-            MOD[Context Modifiers]
+            CAUSAL[Causal Graph Extraction]
+            ATTR[Attribution Engine]
         end
         
-        subgraph "3D: Outcome Envelopes"
-            QR[Quantile Regression]
-            P10[P10 Trajectory]
-            P50[P50 Trajectory]
-            P90[P90 Trajectory]
-            PARETO[Pareto Frontier]
+        subgraph "Trajectory Modeling"
+            TKG[Trajectory Knowledge Graph]
+            TRANS[Transition Probabilities]
+            ENV[Outcome Envelopes P10/P50/P90]
+        end
+        
+        subgraph "Regret Analysis - INTEGRATED"
+            REG[Regret Computer]
+            COUNTER[Counterfactual Analysis]
         end
     end
     
-    subgraph "Layer 4: Risk Analysis"
-        LOCK[Lock-In Detector]
-        REG[Regret Computer]
-        REV[Reversibility Scorer]
-        TDECAY[Time-Decay Analysis]
-    end
-    
-    subgraph "Layer 5: Explanation"
+    subgraph "Layer 4: Multi-Level Explanation"
         LLM[LLM Explanation Engine]
-        PROMPT[Constrained Prompts]
+        ADAPT[Adaptive Levels - Novice/Expert]
+        VIS[Visual Generator]
         PLAIN[Plain English Output]
     end
     
     subgraph "Data Sources"
         PSID[(PSID Survey)]
         H1B[(H1B Database)]
-        LINKEDIN[(LinkedIn Data)]
+        LINKEDIN[(Career Data)]
         POLICY[(Policy APIs)]
     end
     
+    %% Layer 1 Flow
     UI --> FORM
     UI --> DOC
+    UI --> MULTI
     FORM --> VAL
     DOC --> VAL
+    MULTI --> VAL
     VAL --> LSV
     
+    %% Layer 2 Flow
+    LSV --> KG1
     LSV --> FEAS
-    LSV --> TKG
-    
+    KG1 --> FEAS
     CRED --> FEAS
     LEGAL --> FEAS
     TIME --> FEAS
-    KG1 --> FEAS
     
-    FEAS -->|Feasible Paths| TKG
+    FEAS -->|Feasible| LOCK
+    FEAS -->|Maybe| CLARIFY
+    CLARIFY -->|User Answers| LSV
+    LOCK -->|Locked Paths| REV
+    FEAS -->|Approved Paths| TKG
     
-    STATES --> SURV
-    TRANS --> SURV
-    TKG --> COX
-    TKG --> BAYES
-    
-    POLICY --> RAG
-    RAG --> VDB
-    VDB --> MOD
-    
-    SURV --> QR
-    COX --> QR
-    BAYES --> QR
-    MOD --> QR
-    
-    QR --> P10
-    QR --> P50
-    QR --> P90
-    QR --> PARETO
-    
-    P10 --> LOCK
-    P50 --> LOCK
-    P90 --> LOCK
-    
-    LOCK --> REG
-    PARETO --> REG
     LSV --> REV
+    REV --> PROP
+    PROP -->|Path Quality| TKG
     
-    REG --> TDECAY
-    REV --> TDECAY
+    %% Layer 3 Flow
+    POLICY --> RAG
+    RAG --> CAUSAL
+    CAUSAL --> ATTR
+    ATTR -->|Causal Modifiers| TRANS
     
-    P10 --> LLM
-    P50 --> LLM
-    P90 --> LLM
-    LOCK --> LLM
+    TKG --> TRANS
+    TRANS --> ENV
+    
+    ENV --> REG
+    LOCK -->|Lock-In Info| REG
+    REG --> COUNTER
+    
+    %% Layer 4 Flow
+    ENV --> LLM
     REG --> LLM
-    TDECAY --> LLM
+    COUNTER --> LLM
+    LOCK --> LLM
+    PROP --> LLM
     
-    PROMPT --> LLM
-    LLM --> PLAIN
+    LLM --> ADAPT
+    ADAPT --> PLAIN
+    ADAPT --> VIS
     
-    P10 --> VIZ
-    P50 --> VIZ
-    P90 --> VIZ
-    PARETO --> VIZ
+    %% Visualization
+    ENV --> VIZ
+    COUNTER --> VIZ
     PLAIN --> EXP
+    VIS --> EXP
     
-    PSID --> SURV
-    H1B --> BAYES
+    %% Data Sources
+    PSID --> TKG
+    H1B --> TRANS
     LINKEDIN --> TKG
     
+    %% Styling
     style LSV fill:#4A90E2
     style FEAS fill:#E24A4A
-    style QR fill:#50C878
+    style LOCK fill:#FF6B6B
+    style RAG fill:#50C878
+    style CAUSAL fill:#45B7D1
+    style REG fill:#FFA07A
     style LLM fill:#FFB84D
+    style REV fill:#DDA0DD
+```
     style VIZ fill:#9B59B6
 ```
 
@@ -606,7 +607,7 @@ graph LR
 
 ---
 
-## 8. Layer 4: Risk, Regret & Lock-In Analysis
+## 8. Layer 3D: Regret & Lock-In Analysis
 
 ```mermaid
 graph TB
@@ -1116,3 +1117,4 @@ mindmap
 
 > [!TIP]
 > **Technical Depth Signal**: Show judges flowcharts #5 (Survival Analysis), #6 (RAG Integration), and #8 (Risk Analysis) to prove this is not a simple chatbot wrapper.
+
